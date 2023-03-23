@@ -1,4 +1,12 @@
+import 'dart:convert';
+
+import 'package:demo_api_flutter_using_dio/DataManager.dart';
+import 'package:demo_api_flutter_using_dio/Entities/RequestSession.dart';
+import 'package:demo_api_flutter_using_dio/Entities/ResponseToken.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,40 +38,94 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-
         title: Text(widget.title),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
+            TextButton(
+                onPressed: () {
+                  getUserById();
+                },
+                child: const Text('Method Get Not Parameter')),
+            TextButton(
+                onPressed: () {
+                  createRequestToken();
+                },
+                child: const Text('Method Get Constraint Parameter')),
+            TextButton(
+                onPressed: () {
+                  createSessionWithLogin();
+                },
+                child: const Text('Method Post Constraint Parameter & Body')),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
     );
+  }
+}
+
+void getUserById() async {
+  Dio dio = Dio();
+  dio.interceptors.add(PrettyDioLogger());
+  // customization
+  // dio.interceptors.add(PrettyDioLogger(
+  //     requestHeader: true,
+  //     requestBody: true,
+  //     responseBody: true,
+  //     responseHeader: true,
+  //     error: true,
+  //     compact: true,
+  //     maxWidth: 90,
+  //     request: true,
+  //
+  // ));
+  final response = await dio.get('https://jsonplaceholder.typicode.com/posts/1');
+  if (kDebugMode) {
+    print("Get User: ${response.data}");
+  }
+}
+
+void createRequestToken() async {
+  Dio dio = Dio();
+  dio.interceptors.add(PrettyDioLogger());
+  final response = await dio.get('https://api.themoviedb.org/3/authentication/token/new', queryParameters: {
+    'api_key': 'bc8cc6e4b625e35697a3f2466dd628c6'
+  });
+  if (kDebugMode) {
+    print("Request Token: ${response.data}");
+    DataManager.instance.requestToken = ResponseToken.fromJson(response.data).requestToken.toString();
+    print("Request Token: ${DataManager.instance.requestToken}");
+  }
+}
+
+void createSessionWithLogin() async {
+  Dio dio = Dio();
+  // dio.interceptors.add(PrettyDioLogger());
+  dio.interceptors.add(PrettyDioLogger(
+      requestHeader: true,
+      requestBody: true,
+      responseBody: true,
+      responseHeader: true,
+      error: true,
+      compact: true,
+      maxWidth: 90,
+      request: true,
+
+  ));
+  final response = await dio.post('https://api.themoviedb.org/3/authentication/token/validate_with_login',
+      queryParameters: {
+        'api_key': 'bc8cc6e4b625e35697a3f2466dd628c6'
+      },
+      data: json.encode(RequestSession('smeb9716@gmail.com', 'Hiep97tb240297', DataManager.instance.requestToken).toJson())
+      // data: RequestSession('smeb9716@gmail.com', 'Hiep97tb240297', DataManager.instance.requestToken)
+      );
+  if (kDebugMode) {
+    print("Create Session: ${response.data}");
   }
 }
