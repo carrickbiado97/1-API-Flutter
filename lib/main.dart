@@ -63,6 +63,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   createSessionWithLogin();
                 },
                 child: const Text('Method Post Constraint Parameter & Body')),
+            TextButton(
+                onPressed: () {
+                  getListBriefDVC();
+                },
+                child: const Text('Method Get Constraint Parameter & Token Header')),
           ],
         ),
       ),
@@ -106,7 +111,6 @@ void createRequestToken() async {
 
 void createSessionWithLogin() async {
   Dio dio = Dio();
-  // dio.interceptors.add(PrettyDioLogger());
   dio.interceptors.add(PrettyDioLogger(
       requestHeader: true,
       requestBody: true,
@@ -116,7 +120,6 @@ void createSessionWithLogin() async {
       compact: true,
       maxWidth: 90,
       request: true,
-
   ));
   final response = await dio.post('https://api.themoviedb.org/3/authentication/token/validate_with_login',
       queryParameters: {
@@ -127,5 +130,30 @@ void createSessionWithLogin() async {
       );
   if (kDebugMode) {
     print("Create Session: ${response.data}");
+  }
+}
+
+void getListBriefDVC() async {
+  Dio dio = Dio();
+  dio.interceptors.add(PrettyDioLogger(
+    requestHeader: true,
+    requestBody: true,
+    responseBody: true,
+    responseHeader: true,
+    error: true,
+    compact: true,
+    maxWidth: 90,
+    request: true,
+  ));
+  final response = await dio.get('http://14.248.82.173:8321/BusinessService/efileProcessView',
+      queryParameters: {'menuId': '240'},
+      options: Options(
+        headers: {
+          'Authorization': 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJyZXZvdGVjaCIsImlhdCI6MTY3OTgxNzc1OCwiZXhwIjoxNjc5ODM5MzU4LCJ1c2VybmFtZSI6Imhhbmh0dC5ibnYifQ.Cmoj0xRm4QHJjooezJllgDPSwLHrwsfU6099GfXkOFCRYqubeJlai7TA26bZTaYqEKQrsc-XO6RBh86FJjDKubC_Lb-fBWHefft3mAwqUKmkpuoeQ_3NJt-srVQljN08N8Z6NNRPnAgQr7TQI7eOxXfqWETc8CFdkoEAeaU0PVTluMIyQfxw7z1l2iPtnVNSikOQzOwVch1oZUC9bnvKECxTBUP2PhSpLZCIx8WFpiN0I5EZPVdGswbNhziTn59kBujDV6bxlp39hdD-0S8rjtZa8A5j_EmZmTsyOqpVh-LuDY8OpNE5U2nuop65F1wSSqO46ln2xMbrHa3JJcyZqA'
+        }
+      )
+  );
+  if (kDebugMode) {
+    print("List Brief: ${response.data}");
   }
 }
