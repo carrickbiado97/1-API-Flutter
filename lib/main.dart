@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-void getUserById() async {
+Future<void> getUserById() async {
   Dio dio = Dio();
   dio.interceptors.add(PrettyDioLogger());
   // customization
@@ -96,7 +96,7 @@ void getUserById() async {
   }
 }
 
-void createRequestToken() async {
+Future<void> createRequestToken() async {
   Dio dio = Dio();
   dio.interceptors.add(PrettyDioLogger());
   final response = await dio.get('https://api.themoviedb.org/3/authentication/token/new', queryParameters: {
@@ -109,7 +109,7 @@ void createRequestToken() async {
   }
 }
 
-void createSessionWithLogin() async {
+Future<void> createSessionWithLogin() async {
   Dio dio = Dio();
   dio.interceptors.add(PrettyDioLogger(
       requestHeader: true,
@@ -133,7 +133,7 @@ void createSessionWithLogin() async {
   }
 }
 
-void getListBriefDVC() async {
+Future<void> getListBriefDVC() async {
   Dio dio = Dio();
   dio.interceptors.add(PrettyDioLogger(
     requestHeader: true,
